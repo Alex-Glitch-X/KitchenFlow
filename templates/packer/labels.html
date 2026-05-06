@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Labels — Order #{{ order.id }}{% endblock %}
+{% block topbar_title %}<span class="bc">Packing</span> <span class="sep">/</span> Labels #{{ order.id }}{% endblock %}
+{% block topbar_actions %}
+  <button onclick="window.print()" class="btn btn-primary btn-sm">⎙ Print</button>
+  <a href="/packer/order/{{ order.id }}/instructions" class="btn btn-ghost btn-sm">← Back</a>
+{% endblock %}
+{% block sidebar %}
+  <a href="/packer/dashboard" class="nav-item"><div class="nav-icon">📦</div>Packing Queue</a>
+{% endblock %}
+{% block content %}
+<style>
+@media print {
+  .sidebar, .topbar { display:none !important; }
+  .main { padding:0 !important; }
+  .label-card { page-break-inside: avoid; box-shadow:none; border:1px solid #888; }
+  body { background:#fff !important; color:#000 !important; }
+}
+.label-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+.label-card { background:var(--surface); border:1px solid var(--border-b); border-radius:14px; padding:18px; }
+.label-card h3 { font-family:'Playfair Display',serif; font-size:16px; margin-bottom:4px; }
+.label-meta { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:12px; }
+.label-section { margin-top:10px; }
+.label-section h4 { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:6px; }
+.ing-list { font-size:12px; line-height:1.7; color:var(--text); }
+.allergen-row { display:flex; flex-wrap:wrap; gap:5px; }
+</style>
+<div class="label-grid">
+{% for blk in label_blocks %}
+  {% for n in range(blk.item.quantity) %}
+  <div class="label-card">
+    <div class="label-meta">Order #{{ order.id }} · {{ order.customer_name }}</div>
+    <h3>{{ blk.item.meal.name }}</h3>
+    <div class="text-sm text-muted">{{ blk.item.meal.description }}</div>
+    <div class="label-section">
+      <h4>Ingredients</h4>
+      <div class="ing-list">{{ blk.ingredients | map(attribute='name') | join(', ') }}</div>
+    </div>
+    <div class="label-section">
+      <h4>Allergens</h4>
+      <div class="allergen-row">
+        {% if blk.allergens %}
+          {% for a in blk.allergens %}<span class="badge b-amber"><span class="badge-dot"></span>{{ a }}</span>{% endfor %}
+        {% else %}<span class="text-sm text-muted">None declared</span>{% endif %}
+      </div>
+    </div>
+    <div class="label-section">
+      <h4>Nutrition (estimate)</h4>
+      <div class="text-sm text-muted">Energy ~520 kcal · Protein ~28 g · Carbs ~55 g · Fat ~18 g</div>
+    </div>
+    <div class="label-section">
+      <h4>Use by</h4>
+      <div class="text-sm">{{ order.delivery_date }}</div>
+    </div>
+  </div>
+  {% endfor %}
+{% endfor %}
+</div>
+{% endblock %}

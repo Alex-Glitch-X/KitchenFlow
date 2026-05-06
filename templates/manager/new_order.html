@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}New Order{% endblock %}
+{% block topbar_title %}<span class="bc">Orders</span> <span class="sep">/</span> New Order{% endblock %}
+{% block topbar_actions %}<a href="/manager/dashboard" class="btn btn-ghost btn-sm">← Back</a>{% endblock %}
+{% block sidebar %}
+  <a href="/manager/dashboard" class="nav-item"><div class="nav-icon">⊞</div>Dashboard</a>
+  <a href="/manager/orders/new" class="nav-item active"><div class="nav-icon">＋</div>New Order</a>
+  <a href="/manager/inventory" class="nav-item"><div class="nav-icon">◫</div>Inventory</a>
+  <a href="/manager/users" class="nav-item"><div class="nav-icon">◉</div>Users</a>
+  <a href="/manager/report" class="nav-item"><div class="nav-icon">≋</div>Reports</a>
+  <a href="/manager/purchase-list" class="nav-item"><div class="nav-icon">🛒</div>Purchase List</a>
+  <a href="/manager/audit" class="nav-item"><div class="nav-icon">📜</div>Audit Log</a>
+{% endblock %}
+{% block content %}
+<div class="card" style="max-width:700px">
+  <div class="card-header"><div class="card-title"><div class="ct-icon">＋</div>Create New Order</div></div>
+  <div class="card-body">
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="grid-2">
+        <div class="form-group"><label>Customer Name</label><input class="input" type="text" name="customer_name" placeholder="e.g. Theron Vasari" required></div>
+        <div class="form-group"><label>Delivery Date</label><input class="input" type="date" name="delivery_date" required></div>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;font-family:'Playfair Display',serif">Meals & Assignments</div>
+      {% for meal in meals %}
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header" style="padding:10px 16px;background:var(--surface-3)">
+          <label style="display:flex;align-items:center;gap:9px;margin:0;cursor:pointer;font-size:13px;color:var(--text);font-weight:600;text-transform:none;letter-spacing:0">
+            <input type="checkbox" name="meal_ids" value="{{ meal.id }}" style="width:15px;height:15px;accent-color:var(--amber)">
+            {{ meal.name }}
+          </label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:11px;margin:0;text-transform:none">Qty</label>
+            <input type="number" name="qty_{{ meal.id }}" value="1" min="1" max="50" class="input" style="width:65px;padding:4px 8px">
+          </div>
+        </div>
+        {% if meal.components %}
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+          {% for comp in meal.components %}
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <span style="font-size:13px;color:var(--text-muted)">🍴 {{ comp.name }}</span>
+            <select name="chef_{{ meal.id }}_{{ comp.id }}" class="input" style="width:160px;padding:6px 10px">
+              {% for c in chefs %}<option value="{{ c.id }}">{{ c.username }}</option>{% endfor %}
+            </select>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <div style="margin-top:20px">
+        <button type="submit" class="btn btn-primary">✓ Create Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

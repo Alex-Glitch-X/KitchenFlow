@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Inventory{% endblock %}
+{% block topbar_title %}Inventory{% endblock %}
+{% block sidebar %}
+  <a href="/manager/dashboard" class="nav-item"><div class="nav-icon">⊞</div>Dashboard</a>
+  <a href="/manager/orders/new" class="nav-item"><div class="nav-icon">＋</div>New Order</a>
+  <a href="/manager/inventory" class="nav-item active"><div class="nav-icon">◫</div>Inventory</a>
+  <a href="/manager/users" class="nav-item"><div class="nav-icon">◉</div>Users</a>
+  <a href="/manager/report" class="nav-item"><div class="nav-icon">≋</div>Reports</a>
+  <a href="/manager/purchase-list" class="nav-item"><div class="nav-icon">🛒</div>Purchase List</a>
+  <a href="/manager/audit" class="nav-item"><div class="nav-icon">📜</div>Audit Log</a>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">◫</div>Ingredient Stock</div>
+    <span class="text-sm text-muted">{{ ingredients|length }} items</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Ingredient</th><th>Unit</th><th>Stock</th><th>Min Required</th><th>Status</th><th>Update</th></tr></thead>
+      <tbody>
+        {% for i in ingredients %}
+        <tr>
+          <td><strong>{{ i.name }}</strong></td>
+          <td class="text-sm text-muted">{{ i.unit }}</td>
+          <td class="font-mono">{{ i.stock }}</td>
+          <td class="font-mono text-muted">{{ i.min_stock }}</td>
+          <td>
+            {% if i.stock < i.min_stock %}<span class="badge b-red"><span class="badge-dot"></span>Low Stock</span>
+            {% elif i.stock < i.min_stock * 1.5 %}<span class="badge b-amber"><span class="badge-dot"></span>Warning</span>
+            {% else %}<span class="badge b-green"><span class="badge-dot"></span>Good</span>{% endif %}
+          </td>
+          <td>
+            <form method="post" action="/manager/inventory/update/{{ i.id }}" style="display:flex;gap:6px;align-items:center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="number" name="stock" value="{{ i.stock }}" step="0.1" class="input" style="width:88px;padding:5px 8px">
+              <button type="submit" class="btn btn-ghost btn-sm">Save</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

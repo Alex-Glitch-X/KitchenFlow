@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block topbar_title %}Team Members{% endblock %}
+{% block sidebar %}
+  <a href="/manager/dashboard" class="nav-item"><div class="nav-icon">⊞</div>Dashboard</a>
+  <a href="/manager/orders/new" class="nav-item"><div class="nav-icon">＋</div>New Order</a>
+  <a href="/manager/inventory" class="nav-item"><div class="nav-icon">◫</div>Inventory</a>
+  <a href="/manager/users" class="nav-item active"><div class="nav-icon">◉</div>Users</a>
+  <a href="/manager/report" class="nav-item"><div class="nav-icon">≋</div>Reports</a>
+  <a href="/manager/purchase-list" class="nav-item"><div class="nav-icon">🛒</div>Purchase List</a>
+  <a href="/manager/audit" class="nav-item"><div class="nav-icon">📜</div>Audit Log</a>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">◉</div>All Users</div>
+    <span class="text-sm text-muted">{{ users|length }} members</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Member</th><th>Role</th><th></th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:33px;height:33px;border-radius:50%;background:linear-gradient(135deg,#e8612a,#f59c2a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 0 10px rgba(245,156,42,0.2)">{{ u.username[0]|upper }}</div>
+              <strong>{{ u.username }}</strong>
+            </div>
+          </td>
+          <td>
+            {% if u.role=="manager" %}<span class="badge b-amber"><span class="badge-dot"></span>Manager</span>
+            {% elif u.role=="chef" %}<span class="badge b-ember"><span class="badge-dot"></span>Chef</span>
+            {% elif u.role=="packer" %}<span class="badge b-blue"><span class="badge-dot"></span>Packer</span>
+            {% elif u.role=="quality" %}<span class="badge b-green"><span class="badge-dot"></span>Quality</span>
+            {% else %}<span class="badge b-gray"><span class="badge-dot"></span>{{ u.role }}</span>{% endif %}
+          </td>
+          <td>
+            {% if u.id != current_user.id %}
+            <form method="post" action="/manager/users/delete/{{ u.id }}" style="display:inline" onsubmit="return confirm('Delete {{ u.username }}?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-danger btn-sm">✕ Delete</button>
+            </form>
+            {% else %}<span class="text-sm text-muted">— You</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

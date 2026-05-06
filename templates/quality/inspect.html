@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Inspect #{{ order.id }}{% endblock %}
+{% block topbar_title %}<span class="bc">Quality</span> <span class="sep">/</span> Inspect #{{ order.id }}{% endblock %}
+{% block topbar_actions %}<a href="/quality/dashboard" class="btn btn-ghost btn-sm">← Back</a>{% endblock %}
+{% block sidebar %}
+  <a href="/quality/dashboard" class="nav-item active"><div class="nav-icon">🛡</div>Inspections</a>
+{% endblock %}
+{% block content %}
+<div class="card" style="max-width:580px">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">🔍</div>Quality Checklist — {{ order.customer_name }}</div>
+    <span class="badge b-blue"><span class="badge-dot"></span>Packed</span>
+  </div>
+  <div class="card-body">
+    <form method="post" action="/quality/order/{{ order.id }}/submit">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% for label, name in [
+        ("Packaging intact and properly sealed", "packaging"),
+        ("All correct items included", "items"),
+        ("Labels are correct and legible", "labelling"),
+        ("Temperature requirements are met", "temperature"),
+        ("No signs of contamination", "contamination")
+      ] %}
+      <label style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:10px;margin-bottom:8px;background:var(--surface-2);border:1px solid var(--border);cursor:pointer;font-size:13px;transition:all 180ms cubic-bezier(0.16,1,0.3,1)">
+        <input type="checkbox" name="{{ name }}" style="width:16px;height:16px;accent-color:var(--amber);flex-shrink:0">
+        {{ label }}
+      </label>
+      {% endfor %}
+      <div class="form-group" style="margin-top:16px">
+        <label>Notes (optional)</label>
+        <textarea name="notes" class="input" rows="3" placeholder="Add any quality observations..." style="resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+        <button type="submit" name="decision" value="approve" class="btn btn-success">✓ Approve for Delivery</button>
+        <button type="submit" name="decision" value="reject" class="btn btn-danger">✕ Reject Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

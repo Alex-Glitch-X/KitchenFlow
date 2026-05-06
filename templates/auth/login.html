@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KitchenFlow — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300..700&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="dark"]{
+      --bg:#0b0d10; --surface:#11151a; --surface-2:#161b22; --surface-3:#1c222b;
+      --border:rgba(220,200,160,0.07); --border-b:rgba(220,200,160,0.14);
+      --text:#ece6d8; --muted:#8b8474; --faint:#4f4a3f;
+      --amber:#e6b54a; --amber-dim:#c2932e; --amber-g:rgba(230,181,74,0.16); --amber-s:rgba(230,181,74,0.07);
+      --ember:#d97a3a;
+    }
+    [data-theme="light"]{
+      --bg:#f6f3ec; --surface:#fff; --surface-2:#fbf8f1; --surface-3:#f1ebde;
+      --border:rgba(60,50,30,0.09); --border-b:rgba(60,50,30,0.16);
+      --text:#14110c; --muted:#5e5642; --faint:#a89c7e;
+      --amber:#b07d11; --amber-dim:#8a6109; --amber-g:rgba(176,125,17,0.12); --amber-s:rgba(176,125,17,0.06);
+      --ember:#b04e1c;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100dvh; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--text); background: var(--bg);
+      display: grid; grid-template-columns: 1fr 420px;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Left hero panel */
+    .hero {
+      background: var(--surface);
+      border-right: 1px solid var(--border-b);
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+      padding: 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(245,156,42,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .hero-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 56px; }
+    .hero-logo-mark {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--ember), var(--amber));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 24px var(--amber-g);
+    }
+    .hero-logo-mark svg { width: 24px; height: 24px; fill: #fff; }
+    .hero-brand { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+    .hero-brand span { color: var(--amber); }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px; font-weight: 700; line-height: 1.15;
+      letter-spacing: -1px; margin-bottom: 20px;
+      max-width: 14ch;
+    }
+    .hero h1 em { font-style: italic; color: var(--amber); }
+    .hero p { font-size: 15px; color: var(--muted); max-width: 36ch; line-height: 1.7; margin-bottom: 40px; }
+    .hero-features { display: flex; flex-direction: column; gap: 12px; }
+    .hero-feat {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13px; color: var(--muted);
+    }
+    .feat-dot {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: var(--amber-s); border: 1px solid rgba(245,156,42,0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    /* Right sign-in panel */
+    .panel {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 48px 44px;
+      position: relative;
+    }
+    .theme-btn {
+      position: absolute; top: 20px; right: 20px;
+      width: 34px; height: 34px; border-radius: 8px;
+      background: var(--surface-2); border: 1px solid var(--border-b);
+      cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .panel h2 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .panel-sub { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+    .flash-err {
+      padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px;
+      background: rgba(224,82,82,0.10); color: #e05252; border: 1px solid rgba(224,82,82,0.2);
+    }
+    .fg { margin-bottom: 18px; }
+    .fg label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 7px; }
+    .fg input {
+      width: 100%; padding: 10px 14px;
+      background: var(--surface-2); border: 1px solid var(--border-b);
+      border-radius: 10px; font-size: 14px; color: var(--text); outline: none;
+      transition: all 180ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .fg input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-s); }
+    .fg input::placeholder { color: var(--faint); }
+    .submit-btn {
+      width: 100%; padding: 11px; border-radius: 10px; border: none; cursor: pointer;
+      background: var(--amber); color: #1a1008;
+      font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      transition: all 180ms cubic-bezier(0.16,1,0.3,1); margin-top: 6px;
+    }
+    .submit-btn:hover { background: var(--amber-dim); box-shadow: 0 0 24px var(--amber-g), 0 4px 12px rgba(0,0,0,0.3); }
+    .hint-box {
+      margin-top: 24px; padding: 14px 16px;
+      background: var(--surface-2); border: 1px solid var(--border-b);
+      border-radius: 10px; font-size: 12px; color: var(--muted); line-height: 1.8;
+    }
+    .hint-box strong { color: var(--text); }
+    .hint-box code { font-family: 'JetBrains Mono', monospace; background: var(--surface-3); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+    @keyframes slideIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+    .panel { animation: slideIn .4s ease both; }
+    @media (max-width: 768px) { body { grid-template-columns: 1fr; } .hero { display: none; } }
+  </style>
+</head>
+<body>
+<!-- Hero Side -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-logo">
+    <div class="hero-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2c0 0-2.5 3.5-2.5 7.5 0 1.8.9 3 .9 3S9 11 9 8.5c0 0-3.5 3.5-3.5 8 0 5.2 3 8 6.5 8s6.5-2.8 6.5-8C18.5 10 12 2 12 2z"/></svg>
+    </div>
+    <div class="hero-brand">Kitchen<span>Flow</span></div>
+  </div>
+  <h1>Where <em>great meals</em> get organised</h1>
+  <p>A smart kitchen management platform for chefs, packers, and quality teams — all in one place.</p>
+  <div class="hero-features">
+    <div class="hero-feat"><div class="feat-dot">🍳</div>Real-time chef task tracking</div>
+    <div class="hero-feat"><div class="feat-dot">📦</div>Seamless packing workflow</div>
+    <div class="hero-feat"><div class="feat-dot">✅</div>Quality control & approvals</div>
+    <div class="hero-feat"><div class="feat-dot">📊</div>Manager reports & inventory</div>
+  </div>
+</div>
+
+<!-- Sign-in Side -->
+<div class="panel">
+  <button class="theme-btn" data-theme-toggle title="Toggle theme"><span id="ti">🌙</span></button>
+  <h2>Welcome back</h2>
+  <p class="panel-sub">Sign in to your KitchenFlow account</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+    <div class="flash-err">⚠ {{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+  <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="fg"><label>Username</label><input type="text" name="username" placeholder="e.g. HELIOS" required autofocus></div>
+    <div class="fg"><label>Password</label><input type="password" name="password" placeholder="••••••••" required></div>
+    <button type="submit" class="submit-btn">Sign in →</button>
+  </form>
+  <div class="hint-box">
+    <strong>Demo accounts</strong><br>
+    <code>HELIOS</code> &nbsp;•&nbsp; <code>AURELIO</code> &nbsp;•&nbsp; <code>SOLARA</code><br>
+    <code>ORION</code> &nbsp;•&nbsp; <code>VESPER</code><br>
+    Password: <code>password123</code>
+  </div>
+</div>
+<script>
+(function(){
+  var btn=document.querySelector('[data-theme-toggle]'),ti=document.getElementById('ti'),h=document.documentElement;
+  var d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  h.setAttribute('data-theme',d); ti.textContent=d==='dark'?'🌙':'☀️';
+  btn&&btn.addEventListener('click',function(){d=d==='dark'?'light':'dark';h.setAttribute('data-theme',d);ti.textContent=d==='dark'?'🌙':'☀️';});
+})();
+</script>
+</body>
+</html>

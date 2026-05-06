@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"><title>KitchenFlow — {{ code }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#16120e;--surface:#1e1812;--text:#f0e8d8;--muted:#9a8a72;--amber:#f59c2a;--ember:#e8612a;--border:rgba(255,220,150,0.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);min-height:100dvh;display:grid;place-items:center;padding:24px}
+.box{max-width:480px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:48px 36px;box-shadow:0 10px 40px rgba(0,0,0,0.4)}
+.code{font-family:'Playfair Display',serif;font-size:84px;font-weight:700;background:linear-gradient(135deg,var(--ember),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+h1{font-family:'Playfair Display',serif;font-size:24px;margin:14px 0 8px}
+p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px}
+a{display:inline-block;padding:10px 22px;background:var(--amber);color:#1a1008;border-radius:10px;font-weight:700;text-decoration:none;font-size:14px}
+a:hover{background:#c47d1a;box-shadow:0 0 24px rgba(245,156,42,0.25)}
+</style></head><body>
+<div class="box">
+  <div class="code">{{ code }}</div>
+  <h1>{{ title }}</h1>
+  <p>{{ message }}</p>
+  <a href="/">← Back to KitchenFlow</a>
+</div>
+</body></html>

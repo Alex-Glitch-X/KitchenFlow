@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block topbar_title %}<span class="bc">Orders</span> <span class="sep">/</span> #{{ order.id }}{% endblock %}
+{% block topbar_actions %}<a href="/manager/dashboard" class="btn btn-ghost btn-sm">← Back</a>{% endblock %}
+{% block sidebar %}
+  <a href="/manager/dashboard" class="nav-item"><div class="nav-icon">⊞</div>Dashboard</a>
+  <a href="/manager/orders/new" class="nav-item"><div class="nav-icon">＋</div>New Order</a>
+  <a href="/manager/inventory" class="nav-item"><div class="nav-icon">◫</div>Inventory</a>
+  <a href="/manager/users" class="nav-item"><div class="nav-icon">◉</div>Users</a>
+  <a href="/manager/report" class="nav-item"><div class="nav-icon">≋</div>Reports</a>
+  <a href="/manager/purchase-list" class="nav-item"><div class="nav-icon">🛒</div>Purchase List</a>
+  <a href="/manager/audit" class="nav-item"><div class="nav-icon">📜</div>Audit Log</a>
+{% endblock %}
+{% block content %}
+<div class="card" style="margin-bottom:16px">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">ℹ</div>Order Details</div>
+    {% if order.status == "Approved" or order.status == "Completed" %}
+      <span class="badge b-green"><span class="badge-dot"></span>{{ order.status }}</span>
+    {% elif order.status == "In Progress" %}
+      <span class="badge b-ember"><span class="badge-dot"></span>In Progress</span>
+    {% elif order.status == "Ready for Packing" %}
+      <span class="badge b-blue"><span class="badge-dot"></span>Ready to Pack</span>
+    {% elif order.status == "Packed" %}
+      <span class="badge b-amber"><span class="badge-dot"></span>Packed</span>
+    {% else %}
+      <span class="badge b-gray"><span class="badge-dot"></span>{{ order.status }}</span>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="grid-2">
+      <div><div class="text-sm text-muted" style="margin-bottom:4px">Customer</div><strong>{{ order.customer_name }}</strong></div>
+      <div><div class="text-sm text-muted" style="margin-bottom:4px">Delivery Date</div><strong class="font-mono">{{ order.delivery_date }}</strong></div>
+      <div><div class="text-sm text-muted" style="margin-bottom:4px">Created</div><span class="text-sm">{{ order.created_at.strftime("%b %d, %Y %H:%M") }}</span></div>
+      <div><div class="text-sm text-muted" style="margin-bottom:4px">Status</div><strong>{{ order.status }}</strong></div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">✓</div>Preparation Tasks</div>
+    <span class="text-sm text-muted">{{ tasks|length }} task(s)</span>
+  </div>
+  <div class="table-wrap">
+    {% if tasks %}
+    <table>
+      <thead><tr><th>Component</th><th>Meal</th><th>Chef</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for t in tasks %}
+        <tr>
+          <td><strong>{{ t.component.name }}</strong></td>
+          <td class="text-sm text-muted">{{ t.component.meal.name }}</td>
+          <td>{{ t.chef.username if t.chef else "—" }}</td>
+          <td>
+            {% if t.status == "Ready" %}<span class="badge b-green"><span class="badge-dot"></span>Ready</span>
+            {% elif t.status == "In Progress" %}<span class="badge b-ember"><span class="badge-dot"></span>Cooking</span>
+            {% else %}<span class="badge b-gray"><span class="badge-dot"></span>Not Started</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="empty-icon">📋</div><h3>No tasks yet</h3><p>Tasks are created when an order is placed</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">◫</div>Ingredient Requirements</div>
+    {% set short = requirements|selectattr('shortfall','gt',0)|list %}
+    {% if short %}
+      <span class="badge b-red"><span class="badge-dot"></span>{{ short|length }} short</span>
+    {% else %}
+      <span class="badge b-green"><span class="badge-dot"></span>All available</span>
+    {% endif %}
+  </div>
+  <div class="table-wrap">
+    {% if requirements %}
+    <table>
+      <thead><tr><th>Ingredient</th><th>Required</th><th>Available</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for r in requirements %}
+        <tr>
+          <td><strong>{{ r.ingredient.name }}</strong>
+            {% if r.ingredient.allergen %}<span class="badge b-amber" style="margin-left:6px"><span class="badge-dot"></span>{{ r.ingredient.allergen }}</span>{% endif %}
+          </td>
+          <td class="font-mono">{{ r.required }} {{ r.ingredient.unit }}</td>
+          <td class="font-mono text-muted">{{ r.available }} {{ r.ingredient.unit }}</td>
+          <td>
+            {% if r.shortfall > 0 %}<span class="badge b-red"><span class="badge-dot"></span>Short {{ r.shortfall }}</span>
+            {% else %}<span class="badge b-green"><span class="badge-dot"></span>OK</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="empty-icon">◫</div><h3>No ingredient links</h3><p>Components have no ingredient requirements defined.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

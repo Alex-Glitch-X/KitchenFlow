@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Pack Order #{{ order.id }}{% endblock %}
+{% block topbar_title %}<span class="bc">Packing</span> <span class="sep">/</span> Order #{{ order.id }}{% endblock %}
+{% block topbar_actions %}<a href="/packer/dashboard" class="btn btn-ghost btn-sm">← Back</a>{% endblock %}
+{% block sidebar %}
+  <a href="/packer/dashboard" class="nav-item active"><div class="nav-icon">📦</div>Packing Queue</a>
+{% endblock %}
+{% block content %}
+<div class="card" style="max-width:580px">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">📋</div>Packing Checklist — {{ order.customer_name }}</div>
+    {% if order.status=="Rejected" %}<span class="badge b-red"><span class="badge-dot"></span>Rejected — Re-pack</span>{% else %}<span class="badge b-amber"><span class="badge-dot"></span>Ready to Pack</span>{% endif %}
+  </div>
+  <div class="card-body">
+    {% if order.order_items %}
+      {% for item in order.order_items %}
+      <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+          🍽 {{ item.meal.name }}
+          <span class="badge b-gray"><span class="badge-dot"></span>× {{ item.quantity }}</span>
+        </div>
+        {% for comp in item.meal.components %}
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:var(--surface-2);margin-bottom:6px;font-size:13px">
+          <span style="color:var(--green);font-size:15px;flex-shrink:0">✓</span>
+          {{ comp.name }}
+          <span class="text-sm text-muted" style="margin-left:auto">{{ comp.prep_time }} min</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty"><div class="empty-icon">📦</div><h3>No items found</h3></div>
+    {% endif %}
+    <a href="/packer/order/{{ order.id }}/labels" class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:10px">⎙ View / Print Labels</a>
+    <form method="post" action="/packer/order/{{ order.id }}/confirm" style="margin-top:8px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-success" style="width:100%">✓ Confirm — All Items Packed</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

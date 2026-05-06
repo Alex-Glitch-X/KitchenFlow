@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Packing Station{% endblock %}
+{% block topbar_title %}Packing Station{% endblock %}
+{% block sidebar %}
+  <a href="/packer/dashboard" class="nav-item active"><div class="nav-icon">📦</div>Packing Queue</a>
+{% endblock %}
+{% block content %}
+<div class="kpi-grid">
+  <div class="kpi kpi-amber">
+    <div class="kpi-label">Ready to Pack</div>
+    <div class="kpi-value">{{ orders|length }}</div>
+    <div class="kpi-icon">📦</div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">📦</div>Orders Ready for Packing</div>
+  </div>
+  <div class="table-wrap">
+    {% if orders %}
+    <table>
+      <thead><tr><th>Order</th><th>Customer</th><th>Delivery</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><span class="order-id">#{{ o.id }}</span></td>
+          <td><strong>{{ o.customer_name }}</strong></td>
+          <td class="font-mono text-sm">{{ o.delivery_date }}</td>
+          <td>
+  {% if o.status=="Rejected" %}<span class="badge b-red"><span class="badge-dot"></span>Rejected — Re-pack</span>
+  {% else %}<span class="badge b-amber"><span class="badge-dot"></span>Ready to Pack</span>{% endif %}
+</td>
+          <td><a href="/packer/order/{{ o.id }}/instructions" class="btn btn-primary btn-sm">📦 Pack Now</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="empty-icon">📦</div><h3>Nothing to pack yet</h3><p>Orders will appear here once the chef marks all tasks ready</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

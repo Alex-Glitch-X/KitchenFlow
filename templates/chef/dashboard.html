@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}My Kitchen{% endblock %}
+{% block topbar_title %}My Kitchen Tasks{% endblock %}
+{% block sidebar %}
+  <a href="/chef/dashboard" class="nav-item active"><div class="nav-icon">🍳</div>My Tasks</a>
+{% endblock %}
+{% block content %}
+<div class="kpi-grid">
+  <div class="kpi kpi-blue">
+    <div class="kpi-label">Not Started</div>
+    <div class="kpi-value">{{ not_started|length }}</div>
+    <div class="kpi-icon">⏳</div>
+  </div>
+  <div class="kpi kpi-ember">
+    <div class="kpi-label">Cooking</div>
+    <div class="kpi-value">{{ in_progress|length }}</div>
+    <div class="kpi-icon">🔥</div>
+  </div>
+  <div class="kpi kpi-green">
+    <div class="kpi-label">Ready</div>
+    <div class="kpi-value">{{ ready|length }}</div>
+    <div class="kpi-icon">✓</div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><div class="ct-icon">✓</div>Preparation Tasks</div>
+    <span class="text-sm text-muted">{{ tasks|length }} total</span>
+  </div>
+  <div class="table-wrap">
+    {% if tasks %}
+    <table>
+      <thead><tr><th>Component</th><th>Meal</th><th>Order</th><th>Instructions</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for t in tasks %}
+        <tr>
+          <td><strong>{{ t.component.name }}</strong></td>
+          <td class="text-sm text-muted">{{ t.component.meal.name }}</td>
+          <td><span class="order-id">#{{ t.order_id }}</span></td>
+          <td class="text-sm text-muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.component.instructions[:55] }}{% if t.component.instructions|length > 55 %}…{% endif %}</td>
+          <td>
+            {% if t.status=="Ready" %}<span class="badge b-green"><span class="badge-dot"></span>Ready</span>
+            {% elif t.status=="In Progress" %}<span class="badge b-ember"><span class="badge-dot"></span>Cooking</span>
+            {% else %}<span class="badge b-gray"><span class="badge-dot"></span>Not Started</span>{% endif %}
+          </td>
+          <td>
+            {% if t.status=="Not Started" %}
+            <form method="post" action="/chef/task/{{ t.id }}/update" style="display:inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="status" value="In Progress">
+              <button class="btn btn-ghost btn-sm">▶ Start</button>
+            </form>
+            {% elif t.status=="In Progress" %}
+            <form method="post" action="/chef/task/{{ t.id }}/update" style="display:inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="status" value="Ready">
+              <button class="btn btn-success btn-sm">✓ Mark Ready</button>
+            </form>
+            {% else %}
+            <span class="text-sm" style="color:var(--green)">✓ Done</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="empty-icon">🍳</div><h3>No tasks assigned</h3><p>You have no tasks at the moment. Take a break!</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
